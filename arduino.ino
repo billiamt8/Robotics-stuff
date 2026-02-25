@@ -6,9 +6,9 @@ Servo myservo;
 
 const int audio = A2;
 
-const int btn = 12;
+const int btn = 11;
 
-const int buzz = 11;
+const int buzz = 7;
 
 const int In1 = 9;
 
@@ -17,19 +17,21 @@ const int In2 = 8;
 const int EnA = 10;
 
 const int pot = A1;
-  
+
 const int trig = 5;
 
 const int echo = 4;
 
+const int LED = 2;
 
 
-void setup()
-{
+void setup() {
   pinMode(buzz, OUTPUT);
   pinMode(btn, INPUT);
 
-	pinMode(trig, OUTPUT);
+  pinMode(LED, OUTPUT);
+
+  pinMode(trig, OUTPUT);
   pinMode(echo, INPUT);
 
   pinMode(In1, OUTPUT);
@@ -45,68 +47,50 @@ void setup()
   Serial.begin(9600);
 }
 
-void loop()
-{
- myservo.write(0);
-  delay(500);
+void loop() {
+  myservo.write(0);
+
   myservo.write(20);
-  delay(500);
 
 
-  long duration, cm;
- 
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(2);
-  digitalWrite(trig, LOW);
+
+
   
-  duration = pulseIn(echo, HIGH);
+   int input = analogRead(pot);
+    bool pressed = digitalRead(btn);
+    if (pressed) {
+      tone(buzz, 500);
+    } else
+      noTone(buzz);
   
-  cm = distanceConvert(duration);
   
-  Serial.println(duration);
+  int val = analogRead(pot);
+  val = map(val, 0, 1023, 0, 100);
+
+
+
+  {
+
+    goStraight();
+    UltrasonicLED();
+
+  }
 }
+
 long distanceConvert(long microSeconds) {
   return microSeconds / 29 / 2;
 
 
 
-  int input = analogRead(pot);
-  Serial.println(input);
-{
-  bool pressed = digitalRead(btn);
-  if (pressed) {
-    tone(buzz, 500);
-      delay(300);
-      tone(buzz, 300);
-    delay(300);
-    tone(buzz, 500);
-   	delay(buzz);
-  }
-  else 
-     noTone(buzz);
-}
-  
-       int val = analogRead(pot);
-  
-  val = map(val, 0, 1023, 0, 100);
-  
-  Serial.println(val);
-   
-{
 
-  goStraight();
 
-  delay(1000);
-
-}
+  
 }
 
 
 
 
-void goStraight()   //run both motors in the same direction
+void goStraight()  //run both motors in the same direction
 
 {
 
@@ -118,16 +102,11 @@ void goStraight()   //run both motors in the same direction
 
   digitalWrite(In2, LOW);
 
-
-  delay(2000);
-
   // now turn off motors
 
   digitalWrite(In1, LOW);
 
-  digitalWrite(In2, LOW);  
-
-  delay(2000);
+  digitalWrite(In2, LOW);
 
   analogWrite(EnA, 60);
 
@@ -137,4 +116,30 @@ void goStraight()   //run both motors in the same direction
 }
 
 
+void UltrasonicLED()
+{
+  int distance;
+  long duration, cm;
 
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(2);
+  digitalWrite(trig, LOW);
+
+  duration = pulseIn(echo, HIGH);
+
+  cm = distanceConvert(duration);
+
+  Serial.println(duration); 
+
+  distance = duration * 0.0344 / 3;
+
+  int ledBrightness = map(distance, 0, 200, 255, 0);
+
+  ledBrightness = constrain(ledBrightness, 0, 255);
+
+  analogWrite(LED, ledBrightness);
+
+}
+  
