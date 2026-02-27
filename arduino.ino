@@ -48,29 +48,14 @@ void setup() {
 }
 
 void loop() {
-  myservo.write(0);
-
-  myservo.write(20);
-
-
-
-
-  
-   int input = analogRead(pot);
-    bool pressed = digitalRead(btn);
-    if (pressed) {
-      tone(buzz, 500);
-    } else
-      noTone(buzz);
-  
-  
+  int input = analogRead(pot);
   int val = analogRead(pot);
   val = map(val, 0, 1023, 0, 100);
 
 
 
   {
-
+    ButtonBuzzer();
     goStraight();
     UltrasonicLED();
 
@@ -79,12 +64,6 @@ void loop() {
 
 long distanceConvert(long microSeconds) {
   return microSeconds / 29 / 2;
-
-
-
-
-
-  
 }
 
 
@@ -103,6 +82,7 @@ void goStraight()  //run both motors in the same direction
   digitalWrite(In2, LOW);
 
   // now turn off motors
+  delay(500);
 
   digitalWrite(In1, LOW);
 
@@ -142,4 +122,12 @@ void UltrasonicLED()
   analogWrite(LED, ledBrightness);
 
 }
-  
+
+void ButtonBuzzer()
+{
+    bool pressed = digitalRead(btn);
+    if (pressed) {
+      tone(buzz, 500);
+    } else
+      noTone(buzz);
+}
